@@ -51,10 +51,10 @@ while True:
     # escreve nome e crm na imagem branca
     draw = ImageDraw.Draw(imagem_branca)
     try:
-        font = ImageFont.truetype("arial.ttf", 9)
+        font = ImageFont.truetype("arialbd.ttf", 11)
     except:
         font = ImageFont.load_default()
-    texto = f"{nome}\n CRM: {crm}"
+    texto = f"{nome}\nCRM: {crm}"
 
     # calcula tamanho do texto 
     bbox = draw.textbbox((0, 0), texto, font=font)
@@ -63,9 +63,9 @@ while True:
 
     # centraliza o texto na imagem
     px = (largura - w) // 2
-    py = altura - h - 10
+    py = altura - h - 11
 
-    draw.text((px, py), texto, fill=(0, 0, 0), font=font, align="center")
+    draw.text((px, py), texto, fill=(0, 0, 0), font=font, align="center", spacing=0.5)
 
     # salva imagem pronta com nome do médico
     arquivo_final = f"Assinatura - {nome}.png"

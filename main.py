@@ -41,31 +41,47 @@ while True:
     altura = 120
     imagem_branca = Image.new('RGBA', (largura, altura), 'white')
 
-    # centraliza a assinatura na imagem branca
-    x = (largura - output_image.width) // 2
-    y = (altura - output_image.height) // 2
-    imagem_branca.paste(output_image, (x, y), output_image)
-
-
     # texto
-    # escreve nome e crm na imagem branca
-    draw = ImageDraw.Draw(imagem_branca)
+    # define fonte e draw
     try:
         font = ImageFont.truetype("arialbd.ttf", 11)
     except:
         font = ImageFont.load_default()
+    draw = ImageDraw.Draw(imagem_branca)
+
     texto = f"{nome}\nCRM: {crm}"
 
-    # calcula tamanho do texto 
-    bbox = draw.textbbox((0, 0), texto, font=font)
-    w = bbox[2] - bbox[0]
-    h = bbox[3] - bbox[1]
+    # margem
+    margem_horizontal = 20
+    margem_superior = 10
+    margem_texto = 5
 
-    # centraliza o texto na imagem
-    px = (largura - w) // 2
-    py = altura - h - 11
+    # calcula tamanho do texto
+    bbox_texto = draw.multiline_textbbox((0,0), texto, font=font, spacing=1)
+    altura_texto = bbox_texto[3] - bbox_texto[1]
 
-    draw.text((px, py), texto, fill=(0, 0, 0), font=font, align="center", spacing=0.5)
+    # define altura da assinatura
+    altura_disponivel = altura - altura_texto - margem_texto - margem_superior
+    max_largura = largura - (margem_horizontal * 2)
+    max_altura = altura_disponivel
+
+    # redimensiona assinatura proporcionalmente
+    largura_img, altura_img = output_image.size
+    if largura_img > max_largura or altura_img > max_altura:
+        proporcao = min(max_largura / largura_img, max_altura / altura_img)
+        nova_largura = int(largura_img * proporcao)
+        nova_altura = int(altura_img * proporcao)
+        output_image = output_image.resize((nova_largura, nova_altura), Image.LANCZOS)
+
+    # centraliza assinatura na horizontal
+    x = (largura - output_image.width) // 2
+    y = margem_superior
+    imagem_branca.paste(output_image, (x, y), output_image)
+
+    # centraliza texto abaixo da assinatura
+    px = (largura - (bbox_texto[2]-bbox_texto[0])) // 2
+    py = altura - altura_texto - 5
+    draw.multiline_text((px, py), texto, fill=(0,0,0), font=font, align="center", spacing=0.75)
 
     # salva imagem pronta com nome do médico
     arquivo_final = f"Assinatura - {nome}.png"

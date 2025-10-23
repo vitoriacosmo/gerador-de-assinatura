@@ -24,7 +24,7 @@ while True:
     output_image = Image.open(io.BytesIO(output_data)).convert("RGBA")
 
     # suaviza bordas
-    output_image = output_image.filter(ImageFilter.GaussianBlur(0.25))
+    output_image = output_image.filter(ImageFilter.GaussianBlur(0.23))
 
     # remove pixels meio transparentes
     r, g, b, a = output_image.split()
@@ -74,8 +74,8 @@ while True:
     largura_img, altura_img = output_image.size
     if largura_img > max_largura or altura_img > max_altura:
         proporcao = min(max_largura / largura_img, max_altura / altura_img)
-        nova_largura = int(largura_img * proporcao)
-        nova_altura = int(altura_img * proporcao)
+        nova_largura = int((largura_img * proporcao) * 1.5)
+        nova_altura = int((altura_img * proporcao) * 1.5)
         output_image = output_image.resize((nova_largura, nova_altura), Image.LANCZOS)
 
     # centraliza assinatura na horizontal
@@ -85,7 +85,7 @@ while True:
 
     # centraliza texto abaixo da assinatura
     px = (largura - (bbox_texto[2]-bbox_texto[0])) // 2
-    py = altura - altura_texto - 5
+    py = altura - altura_texto - 15
     draw.multiline_text((px, py), texto, fill=(0,0,0), font=font, align="center", spacing=0.75)
 
     # salva imagem pronta com nome do médico

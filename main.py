@@ -1,6 +1,6 @@
 from rembg import remove, new_session
 from PIL import Image, ImageFilter, ImageDraw, ImageFont
-import datetime, io
+import io
 from tkinter import Tk, filedialog
 
 session = new_session("isnet-general-use")  # modelo 
@@ -24,15 +24,20 @@ while True:
     output_image = Image.open(io.BytesIO(output_data)).convert("RGBA")
 
     # suaviza bordas
-    output_image = output_image.filter(ImageFilter.GaussianBlur(0.5))
+    output_image = output_image.filter(ImageFilter.GaussianBlur(0.25))
 
     # remove pixels meio transparentes
     r, g, b, a = output_image.split()
     a = a.point(lambda i: 0 if i < 15 else i)
-    output_image = Image.merge("RGBA", (r, g, b, a))
 
-    # transparência opcional
+    # pinta a assinatura de preto
+    assinatura_preta = Image.new("RGBA", output_image.size, (0, 0, 0, 0))
+    preto = Image.new("RGBA", output_image.size, (0, 0, 0, 255))
+    assinatura_preta = Image.composite(preto, assinatura_preta, a)
+
+    # aplica transparência opcional
     transparencia = 230
+    r, g, b, a = assinatura_preta.split()
     a = a.point(lambda i: int(i * (transparencia / 255)))
     output_image = Image.merge("RGBA", (r, g, b, a))
 
